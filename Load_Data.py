@@ -5,6 +5,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.nn.init as init
+from Discriminator import DiscriminatorNet
+from Generator import GeneratorNet
 
 import matplotlib
 import numpy as np
@@ -29,3 +31,6 @@ print("x_valid", x_valid.shape)
 print("targets_valid", targets_valid.shape)
 print("x_test", x_test.shape)
 print("targets_test", targets_test.shape)
+
+discriminator = DiscriminatorNet()
+generator = GeneratorNet()
