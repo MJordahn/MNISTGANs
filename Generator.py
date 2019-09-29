@@ -1,3 +1,11 @@
+import torch
+from torch.autograd import Variable
+from torch.nn.parameter import Parameter
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+import torch.nn.init as init
+
 class GeneratorNet(torch.nn.Module):
     """
     A three hidden-layer generative neural network
