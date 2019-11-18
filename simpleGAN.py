@@ -75,43 +75,45 @@ def train_generator(mu, fake_data, discriminator):
 #Get 1000 samples from normal distribution with mean 0, variance 1
 data = np.random.normal(0, 1, 10000)
 
-discriminator = DiscriminatorNet()
-discriminator = discriminator.float()
-d_optimizer = optim.Adam(discriminator.parameters(), lr=0.001)
 
-loss = nn.BCELoss()
 
-train_ratio = 5
+train_ratios = [1, 2, 3, 4, 5, 10, 20, 50]
 
-mu = 2
+
+
 
 num_epochs = 50
 samples_run_through = 1
-d_errors_f = open("Errors/simple"+str(num_epochs)+ "/d_errors.txt","w")
-g_errors_f = open("Errors/simple"+ str(num_epochs)+ "/g_errors.txt","w")
-x_train = DataLoader(torch.from_numpy(data).float(), 128, shuffle=True)
-for epoch in range(num_epochs):
-    for n_batch, real_batch in enumerate(x_train):
-        N = real_batch.size(0)
-        # 1. Train Discriminator
-        real_data = Variable(real_batch)
-        for i in range(train_ratio):
-            # Generate fake data and detach
-            # (so gradients are not calculated for generator)
+d_errors_f = open("Errors/simple"+str(num_epochs)+ "_lr001/d_errors.txt","w")
+g_errors_f = open("Errors/simple"+ str(num_epochs)+ "_lr001/g_errors.txt","w")
+x_train = DataLoader(torch.from_numpy(data).float(), 512, shuffle=True)
+for train_ratio in train_ratios:
+    torch.manual_seed(0)
+    mu = 2
+    discriminator = DiscriminatorNet()
+    discriminator = discriminator.float()
+    d_optimizer = optim.Adam(discriminator.parameters(), lr=0.001)
+    loss = nn.BCELoss()
+    print(train_ratio)
+    for epoch in range(num_epochs):
+        for n_batch, real_batch in enumerate(x_train):
+            N = real_batch.size(0)
+            # 1. Train Discriminator
+            real_data = Variable(real_batch)
+            for i in range(train_ratio):
+                # Generate fake data and detach
+                # (so gradients are not calculated for generator)
+                fake_data = Variable(torch.from_numpy(np.random.normal(mu, 1, N))).float()
+                # Train D
+                d_error, d_pred_real, d_pred_fake = train_discriminator(d_optimizer, real_data, fake_data)
+
+
+            # 2. Train Generator
+            # Generate fake data
             fake_data = Variable(torch.from_numpy(np.random.normal(mu, 1, N))).float()
-            # Train D
-            d_error, d_pred_real, d_pred_fake = train_discriminator(d_optimizer, real_data, fake_data)
-
-
-        # 2. Train Generator
-        # Generate fake data
-        fake_data = Variable(torch.from_numpy(np.random.normal(mu, 1, N))).float()
-        # Train G
-        mu = train_generator(mu, fake_data, discriminator)
-        params = list(discriminator.parameters())
-        print(params)
-        d_errors_f.write(str(params[0].item())+";" + str(params[1].item()) + ";" +str(samples_run_through)+";"+str(epoch)+";"+str(n_batch)+"\n")
-        g_errors_f.write(str(mu.item())+";"+str(samples_run_through)+";"+str(epoch)+";"+str(n_batch)+"\n")
-        samples_run_through += 1
-print(list(discriminator.parameters()))
-print(mu)
+            # Train G
+            mu = train_generator(mu, fake_data, discriminator)
+            params = list(discriminator.parameters())
+            d_errors_f.write(str(params[0].item())+";" + str(params[1].item()) + ";" +str(samples_run_through)+";"+str(epoch)+";"+str(n_batch)+";" + str(train_ratio) + "\n")
+            g_errors_f.write(str(mu.item())+";"+str(samples_run_through)+";"+str(epoch)+";"+ str(train_ratio) +"\n")
+            samples_run_through += 1
