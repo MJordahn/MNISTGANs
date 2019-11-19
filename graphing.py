@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d, Axes3D
 
-f = open("Errors/simple50/g_errors.txt", "r")
-f1 = open("Errors/simple50/d_errors.txt", "r")
+f = open("Errors/simple50_lr001/g_errors.txt", "r")
+f1 = open("Errors/simple50_lr001/d_errors.txt", "r")
 f = f.read()
 f1 = f1.read()
 iteration = []

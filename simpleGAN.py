@@ -89,7 +89,7 @@ g_errors_f = open("Errors/simple"+ str(num_epochs)+ "_lr001/g_errors.txt","w")
 x_train = DataLoader(torch.from_numpy(data).float(), 512, shuffle=True)
 for train_ratio in train_ratios:
     torch.manual_seed(0)
-    mu = 2
+    mu = torch.Tensor([2])
     discriminator = DiscriminatorNet()
     discriminator = discriminator.float()
     d_optimizer = optim.Adam(discriminator.parameters(), lr=0.001)
@@ -106,14 +106,12 @@ for train_ratio in train_ratios:
                 fake_data = Variable(torch.from_numpy(np.random.normal(mu, 1, N))).float()
                 # Train D
                 d_error, d_pred_real, d_pred_fake = train_discriminator(d_optimizer, real_data, fake_data)
-
-
+            samples_run_through += 1
+            params = list(discriminator.parameters())
+            d_errors_f.write(str(params[0].item())+";" + str(params[1].item()) + ";" +str(samples_run_through)+";"+str(epoch)+";"+str(n_batch)+";" + str(train_ratio) + "\n")
+            g_errors_f.write(str(mu.item())+";"+str(samples_run_through)+";"+str(epoch)+";"+ str(train_ratio) +"\n")
             # 2. Train Generator
             # Generate fake data
             fake_data = Variable(torch.from_numpy(np.random.normal(mu, 1, N))).float()
             # Train G
             mu = train_generator(mu, fake_data, discriminator)
-            params = list(discriminator.parameters())
-            d_errors_f.write(str(params[0].item())+";" + str(params[1].item()) + ";" +str(samples_run_through)+";"+str(epoch)+";"+str(n_batch)+";" + str(train_ratio) + "\n")
-            g_errors_f.write(str(mu.item())+";"+str(samples_run_through)+";"+str(epoch)+";"+ str(train_ratio) +"\n")
-            samples_run_through += 1
