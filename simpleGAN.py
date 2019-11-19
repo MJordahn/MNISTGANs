@@ -84,15 +84,15 @@ train_ratios = [1, 2, 3, 4, 5, 10, 20, 50]
 
 num_epochs = 50
 samples_run_through = 1
-d_errors_f = open("Errors/simple"+str(num_epochs)+ "_lr001/d_errors.txt","w")
-g_errors_f = open("Errors/simple"+ str(num_epochs)+ "_lr001/g_errors.txt","w")
+d_errors_f = open("Errors/simple"+str(num_epochs)+ "_lr001_SGD/d_errors.txt","w")
+g_errors_f = open("Errors/simple"+ str(num_epochs)+ "_lr001_SGD/g_errors.txt","w")
 x_train = DataLoader(torch.from_numpy(data).float(), 512, shuffle=True)
 for train_ratio in train_ratios:
     torch.manual_seed(0)
     mu = torch.Tensor([2])
     discriminator = DiscriminatorNet()
     discriminator = discriminator.float()
-    d_optimizer = optim.Adam(discriminator.parameters(), lr=0.001)
+    d_optimizer = optim.SGD(discriminator.parameters(), lr=0.001)
     loss = nn.BCELoss()
     print(train_ratio)
     for epoch in range(num_epochs):
