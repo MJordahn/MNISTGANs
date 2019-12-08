@@ -58,7 +58,7 @@ for i, element in enumerate(zipped):
     if i%10 == 0:
         dist_mu.append(0-element[0])
         theoretical_a = 0-element[0]
-        theoretical_b = 1/2*(0-element[0]**2)
+        theoretical_b = -1/2*(0-(element[0]**2))
         if element[3] == '1':
             dist_a1.append(theoretical_a - element[1])
             dist_b1.append(theoretical_b - element[2])
